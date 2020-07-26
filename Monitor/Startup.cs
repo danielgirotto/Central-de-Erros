@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Monitor.Models;
+using Monitor.Services;
 using System.Text;
 
 namespace Monitor
@@ -23,38 +26,11 @@ namespace Monitor
         {
             services.AddControllers();
 
-            services.AddSwaggerGen(option =>
-            {
-                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Central de Erros", Version = "v1" });
+            services.AddDbContext<MonitorContext>();
+            services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IUserService, UserService>();
 
-                option.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-                {
-                    Description = "JWT Bearer Auth",
-                    Scheme = JwtBearerDefaults.AuthenticationScheme.ToLower(),
-                    Name = JwtBearerDefaults.AuthenticationScheme,
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http
-                });
-
-                option.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = JwtBearerDefaults.AuthenticationScheme
-                            },
-                            Scheme = JwtBearerDefaults.AuthenticationScheme.ToLower(),
-                            Name = JwtBearerDefaults.AuthenticationScheme,
-                            In = ParameterLocation.Header,
-                        },
-                        new string[] {}
-                    }
-                });
-            });
-
+            AddSwagger(services);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
@@ -94,6 +70,41 @@ namespace Monitor
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+
+        private void AddSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen(option =>
+            {
+                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Central de Erros", Version = "v1" });
+
+                option.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Description = "JWT Bearer Auth",
+                    Scheme = JwtBearerDefaults.AuthenticationScheme.ToLower(),
+                    Name = JwtBearerDefaults.AuthenticationScheme,
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http
+                });
+
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = JwtBearerDefaults.AuthenticationScheme
+                            },
+                            Scheme = JwtBearerDefaults.AuthenticationScheme.ToLower(),
+                            Name = JwtBearerDefaults.AuthenticationScheme,
+                            In = ParameterLocation.Header,
+                        },
+                        new string[] {}
+                    }
+                });
             });
         }
     }

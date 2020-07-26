@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Monitor.Models;
+using Monitor.Services;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,28 +16,26 @@ namespace Monitor.Controllers
     public class TokenController : Controller
     {
         private readonly IConfiguration _configuration;
+        private readonly IUserService _service;
 
-        public TokenController(IConfiguration configuration)
+        public TokenController(IConfiguration configuration, IUserService service)
         {
             _configuration = configuration;
+            _service = service;
         }
 
         [AllowAnonymous]
         [HttpPost]
         public IActionResult RequestToken([FromBody] User request)
         {
-            if (request.Email == "user" && request.Password == "pass")
+            if (_service.Login(request.Email, request.Password))
             {
-                var claims = new[] { new Claim(ClaimTypes.Email, request.Email) };
-
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecurityKey"]));
 
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
                 var token = new JwtSecurityToken(
-                    claims: claims,
+                    claims: new[] { new Claim(ClaimTypes.Email, request.Email) },
                     expires: DateTime.Now.AddMinutes(30),
-                    signingCredentials: creds
+                    signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
                 );
 
                 return Ok(new
