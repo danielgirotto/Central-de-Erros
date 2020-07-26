@@ -4,17 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Monitor.Models
 {
-    [Table("user")]
-    public class User
+    [Table("environment")]
+    public class Environment
     {
         [Key, Column("id")]
         public int Id { get; set; }
 
-        [Required, Column("email"), StringLength(100)]
-        public string Email { get; set; }
-
-        [Required, Column("password"), StringLength(255)]
-        public string Password { get; set; }
+        [Required, Column("name"), StringLength(100)]
+        public string Name { get; set; }
 
         public virtual ICollection<Error> Errors { get; set; }
     }

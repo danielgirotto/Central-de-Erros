@@ -8,6 +8,9 @@ namespace Monitor
     {
         public AutoMapperProfile()
         {
+            CreateMap<Environment, EnvironmentDTO>().ReverseMap();
+            CreateMap<Error, ErrorDTO>().ReverseMap();
+            CreateMap<Level, LevelDTO>().ReverseMap();
             CreateMap<User, UserDTO>().ReverseMap();
         }
     }

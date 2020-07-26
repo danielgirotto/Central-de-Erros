@@ -4,6 +4,9 @@ namespace Monitor.Models
 {
     public class MonitorContext : DbContext
     {
+        public DbSet<Environment> Environments { get; set; }
+        public DbSet<Error> Errors { get; set; }
+        public DbSet<Level> Levels { get; set; }
         public DbSet<User> Users { get; set; }
 
         public MonitorContext(DbContextOptions<MonitorContext> options) : base(options) { }

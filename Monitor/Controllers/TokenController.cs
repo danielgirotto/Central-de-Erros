@@ -28,6 +28,9 @@ namespace Monitor.Controllers
         [HttpPost]
         public IActionResult RequestToken([FromBody] User request)
         {
+            if (request is null)
+                return BadRequest();
+
             if (_service.Login(request.Email, request.Password))
             {
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecurityKey"]));

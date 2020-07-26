@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Monitor.Models;
 using Monitor.Services;
+using System;
 using System.Text;
 
 namespace Monitor
@@ -28,6 +29,9 @@ namespace Monitor
 
             services.AddDbContext<MonitorContext>();
             services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IEnvironmentService, EnvironmentService>();
+            services.AddScoped<IErrorService, ErrorService>();
+            services.AddScoped<ILevelService, LevelService>();
             services.AddScoped<IUserService, UserService>();
 
             AddSwagger(services);
@@ -102,7 +106,7 @@ namespace Monitor
                             Name = JwtBearerDefaults.AuthenticationScheme,
                             In = ParameterLocation.Header,
                         },
-                        new string[] {}
+                        Array.Empty<string>()
                     }
                 });
             });
